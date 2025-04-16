@@ -339,9 +339,6 @@ impl Agent {
 
         let goose_mode = config.get_param("GOOSE_MODE").unwrap_or("auto".to_string());
 
-        let (tools_with_readonly_annotation, tools_without_annotation) =
-            Self::categorize_tools_by_annotation(&tools);
-
         if let Some(content) = messages
             .last()
             .and_then(|msg| msg.content.first())
@@ -365,6 +362,12 @@ impl Agent {
                         if let Some(session_config) = session.clone() {
                             Self::update_session_metrics(session_config, &usage, messages.len()).await?;
                         }
+
+                        // Update tools after the response to handle
+                        (tools, toolshim_tools, system_prompt) = self.prepare_tools_and_prompt().await?;
+
+                        let (tools_with_readonly_annotation, tools_without_annotation) =
+                            Self::categorize_tools_by_annotation(&tools);
 
                         // Reset truncation attempt
                         truncation_attempt = 0;
