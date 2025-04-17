@@ -115,6 +115,8 @@ impl Agent {
         request_id: String,
     ) -> (String, Result<Vec<Content>, ToolError>) {
         let extension_manager = self.extension_manager.lock().await;
+        let result =
+            /*
         let result = if tool_call.name == PLATFORM_READ_RESOURCE_TOOL_NAME {
             // Check if the tool is read_resource and handle it separately
             extension_manager
@@ -132,10 +134,12 @@ impl Agent {
                 "Frontend tool execution required".to_string(),
             ))
         } else {
+         */
             extension_manager
                 .dispatch_tool_call(tool_call.clone())
                 .await
-        };
+        //};
+        ;
 
         debug!(
             "input" = serde_json::to_string(&tool_call).unwrap(),
@@ -272,6 +276,9 @@ impl Agent {
     }
 
     pub async fn list_tools(&self, extension_name: Option<String>) -> Vec<Tool> {
+        if extension_name.as_deref() == Some("platform") {
+            return vec![];
+        }
         let extension_manager = self.extension_manager.lock().await;
         let mut prefixed_tools = extension_manager
             .get_prefixed_tools(extension_name.clone())
@@ -280,13 +287,13 @@ impl Agent {
 
         if extension_name.is_none() || extension_name.as_deref() == Some("platform") {
             // Add platform tools
-            prefixed_tools.push(platform_tools::search_available_extensions_tool());
-            prefixed_tools.push(platform_tools::enable_extension_tool());
+            //prefixed_tools.push(platform_tools::search_available_extensions_tool());
+            //prefixed_tools.push(platform_tools::enable_extension_tool());
 
             // Add resource tools if supported
             if extension_manager.supports_resources() {
-                prefixed_tools.push(platform_tools::read_resource_tool());
-                prefixed_tools.push(platform_tools::list_resources_tool());
+                //prefixed_tools.push(platform_tools::read_resource_tool());
+                //prefixed_tools.push(platform_tools::list_resources_tool());
             }
         }
 
