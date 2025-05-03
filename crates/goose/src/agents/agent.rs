@@ -116,6 +116,7 @@ impl Agent {
         tool_call: mcp_core::tool::ToolCall,
         request_id: String,
     ) -> (String, Result<Vec<Content>, ToolError>) {
+        /*
         if tool_call.name == PLATFORM_MANAGE_EXTENSIONS_TOOL_NAME {
             let extension_name = tool_call
                 .arguments
@@ -133,9 +134,10 @@ impl Agent {
                 .manage_extensions(action, extension_name, request_id)
                 .await;
         }
+        */
 
         let extension_manager = self.extension_manager.lock().await;
-        let result = if tool_call.name == PLATFORM_READ_RESOURCE_TOOL_NAME {
+        let result = /* if tool_call.name == PLATFORM_READ_RESOURCE_TOOL_NAME {
             // Check if the tool is read_resource and handle it separately
             extension_manager
                 .read_resource(tool_call.arguments.clone())
@@ -152,10 +154,11 @@ impl Agent {
                 "Frontend tool execution required".to_string(),
             ))
         } else {
+        */
             extension_manager
                 .dispatch_tool_call(tool_call.clone())
-                .await
-        };
+                .await;
+        //};
 
         debug!(
             "input" = serde_json::to_string(&tool_call).unwrap(),
@@ -267,6 +270,7 @@ impl Agent {
             .await
             .unwrap_or_default();
 
+        /*
         if extension_name.is_none() || extension_name.as_deref() == Some("platform") {
             // Add platform tools
             prefixed_tools.push(platform_tools::search_available_extensions_tool());
@@ -278,6 +282,7 @@ impl Agent {
                 prefixed_tools.push(platform_tools::list_resources_tool());
             }
         }
+        */
 
         prefixed_tools
     }
